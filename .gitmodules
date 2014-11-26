@@ -1,0 +1,3 @@
+[submodule "tosdr.org"]
+	path = tosdr.org
+	url = https://github.com/tosdr/tosdr.org.git
