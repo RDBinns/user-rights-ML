@@ -10,12 +10,12 @@ def getquote(text):
 		return quote
 
 # example quote extraction
-#   json_data = open('tosdr.org/points/example.json')
-#   data = json.load(json_data)
-#   topic = data['topics']
-#   print topic[0]
-#   tldr = data['tosdr']['tldr']
-#   getquote(tldr)
+json_data = open('tosdr.org/points/any-time-with-notice.json')
+data = json.load(json_data)
+topic = data['topics']
+print topic[0]
+tldr = data['tosdr']['tldr']
+getquote(tldr)
 
 # create list of all points in the folder to be analysed
 pointlist = []
