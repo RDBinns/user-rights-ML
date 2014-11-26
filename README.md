@@ -11,4 +11,4 @@ The data is taken from (tosdr.org)[www.tosdr.org], specifically what's contained
 
 If this approach works, it could give an automatic score to any privacy policy / terms-of-service text. No one has time to read these texts, so an automated guess as to how good or bad they are, even if it is imperfect, could be quite useful.
 
-See also (Ammar et al, 2012)[http://reports-archive.adm.cs.cmu.edu/anon/isr2012/CMU-ISR-12-114.pdf]
+See also [Ammar et al, 2012](http://reports-archive.adm.cs.cmu.edu/anon/isr2012/CMU-ISR-12-114.pdf)
