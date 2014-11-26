@@ -10,7 +10,7 @@ def getquote(text):
 		return quote
 
 # example quote extraction
-json_data = open('tosdr.org/points/example.json')
+json_data = open('tosdr.org/points/any-time-with-notice.json')
 data = json.load(json_data)
 topic = data['topics']
 print topic[0]
@@ -38,6 +38,7 @@ for point in pointlist:
 				tldr = tosdr['tldr']
 				tldr = tldr.encode('UTF-8', 'replace')
 				tldr = str(tldr)
+				tldr = tldr.replace("\n", " ")
 				tldr = tldr.replace(",", "")
 #				tldr = re.findall(ur'[^"^\u201c]*["\u201d]', tldr) - in case you want to limit to direct quotations from the policy
 				print tldr
