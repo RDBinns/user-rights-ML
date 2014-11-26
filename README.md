@@ -5,7 +5,7 @@ user-rights-ML
 
 I'm applying a naive Bayesian classifier to a set of clauses from privacy policies and terms-of-service that have been rated by the crowd as 'good', 'bad' or 'neutral'. There are various different topics and the classifier works on a per-topic basis. The classify.py script uses clauses on copyright as an example, but the same principles apply to other clauses.
 
-The data is taken from (tosdr.org)[www.tosdr.org], specifically what's contained in /points. This can be extracted using the getpointsdata.py script.
+The data is taken from [tosdr.org](www.tosdr.org), specifically what's contained in /points. This can be extracted using the getpointsdata.py script.
 
 ## Why?
 
