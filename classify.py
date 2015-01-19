@@ -6,15 +6,18 @@ from sklearn.svm import LinearSVC
 from sklearn.ensemble import GradientBoostingClassifier, AdaBoostClassifier
 from sklearn.linear_model import (RidgeClassifier, Perceptron,
                                   PassiveAggressiveClassifier, SGDClassifier)
-
+from sklearn.multiclass import OneVsRestClassifier
 import sklearn.metrics
 
 import sys
 import pandas as pd
 import numpy as np
 
-if len(sys.argv < 2):
-    print "usage: {} [FILE.csv]"
+import warnings
+warnings.filterwarnings('ignore')
+
+if len(sys.argv) < 2:
+    print "usage: {} [FILE.csv]".format(sys.argv[0])
     sys.exit(0)
 
 f = sys.argv[1]
@@ -50,7 +53,7 @@ for v in vectorizers:
             vectorizer = v
             X_train_tfidf = vectorizer.fit_transform(csv[1][train])
 
-            clf = classifier
+            clf = OneVsRestClassifier(classifier)
 
             clf.fit(X_train_tfidf, csv[2][train])
 
