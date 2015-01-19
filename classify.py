@@ -13,6 +13,10 @@ import sys
 import pandas as pd
 import numpy as np
 
+if len(sys.argv < 2):
+    print "usage: {} [FILE.csv]"
+    sys.exit(0)
+
 f = sys.argv[1]
 csv = pd.read_csv(f, header=None)
 
