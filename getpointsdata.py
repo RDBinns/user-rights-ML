@@ -38,8 +38,11 @@ for point in pointlist:
 				tldr = tosdr['tldr']
 				tldr = tldr.encode('UTF-8', 'replace')
 				tldr = str(tldr)
+				tldr = tldr.decode('UTF-8', 'replace')
 				tldr = tldr.replace("\n", " ")
 				tldr = tldr.replace(",", "")
+				tldr = unicode(tldr).replace(u'\u201c', "")
+				tldr = unicode(tldr).replace(u'\u201d', "")
 #				tldr = re.findall(ur'[^"^\u201c]*["\u201d]', tldr) - in case you want to limit to direct quotations from the policy
 				print tldr
 				if 'score' in tosdr:
@@ -48,5 +51,5 @@ for point in pointlist:
 					result = "%s,%s,%s\n" % (topic, tldr, rating)
 #					result = result.encode('UTF-8', 'replace')
 					with open("tostraining5.csv", "a") as archive:
-						archive.write(result)
+						archive.write(result.encode('utf-8', 'replace'))
 					print "archived entry on %s" % topic
