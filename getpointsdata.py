@@ -2,6 +2,7 @@ import json
 import re
 import os, os.path
 import csv
+import sys
 
 ## get the relevant quote from a json file
 def getquote(text):
@@ -41,12 +42,15 @@ for point in pointlist:
 				tldr = tldr.decode('UTF-8', 'replace')
 				tldr = tldr.replace("\n", " ")
 				tldr = tldr.replace(",", "")
+				tldr = re.sub('<[^<]+?>', '', tldr)
 				tldr = unicode(tldr).replace(u'\u201c', "")
 				tldr = unicode(tldr).replace(u'\u201d', "")
 #				tldr = re.findall(ur'[^"^\u201c]*["\u201d]', tldr) - in case you want to limit to direct quotations from the policy
 				print tldr
 				if 'score' in tosdr:
 					rating = str(tosdr['point'])
+					if rating in sys.argv:
+						continue
 					print rating
 					result = "%s,%s,%s\n" % (topic, tldr, rating)
 #					result = result.encode('UTF-8', 'replace')

@@ -33,16 +33,26 @@ print np.sum(csv[2].apply(pd.value_counts))
 
 
 def featurize(input):
-    # tokenize into words
+    input = input.replace(u"\u2019", "'")
+    input = input.replace("'", "")
+    input = input.replace("http://", "")
+    input = input.replace("https://", "")
+
+    input = input.replace(u"\xa7", '')
+    input = input.replace('`', '')
+    input = input.replace("-", '')
+    input = input.replace("...", '')
+
     tokens = [word for sent in sent_tokenize(input)
               for word in word_tokenize(sent)]
 
-    # lower capitalization
+    stop = stopwords.words('english')
+    tokens = [token for token in tokens if token not in stop]
+
     tokens = [word.lower() for word in tokens]
 
     tokens = [word for word in tokens if len(word) >= 2]
 
-    # lemmatize
     lmtzr = WordNetLemmatizer()
     tokens = [lmtzr.lemmatize(word) for word in tokens]
 
@@ -50,18 +60,17 @@ def featurize(input):
 
 classifiers = [
     SGDClassifier(alpha=.0001, n_iter=50, penalty='l2'),
-    RidgeClassifier(tol=1e-2, solver="lsqr"),
-    Perceptron(n_iter=50),
-    PassiveAggressiveClassifier(n_iter=50, loss='squared_hinge', C=0.8),
+    # RidgeClassifier(tol=1e-2, solver="lsqr"),
+    # Perceptron(n_iter=50),
+    # PassiveAggressiveClassifier(n_iter=50, loss='squared_hinge'),
     BernoulliNB(alpha=0.01),
     MultinomialNB(alpha=0.01),
     LinearSVC(loss='l2', penalty='l2', dual=False, tol=1e-3),
 ]
 
 vectorizers = [
-    CountVectorizer(ngram_range=(1, 4),
-                    tokenizer=featurize,
-                    min_df=1),
+    CountVectorizer(ngram_range=(1, 2),
+                    tokenizer=featurize),
 ]
 
 splitter = ShuffleSplit(csv.shape[0], n_iter=10, test_size=0.1)
@@ -91,5 +100,7 @@ for v in vectorizers:
         f1s = np.array(f1s)
         print '    > Accuracy: {} ({})'.format(accuracies.mean(),
                                                accuracies.std()*2)
+        # print accuracies
         print '    > F1 scires {} ({})'.format(f1s.mean(), f1s.std()*2)
+        # print f1s
         # print pipeline.steps[0][1].get_feature_names()
