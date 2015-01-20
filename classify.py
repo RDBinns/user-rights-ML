@@ -1,13 +1,19 @@
+# -*- coding: utf-8 -*-
 from sklearn.feature_extraction.text import (TfidfVectorizer, CountVectorizer,
                                              HashingVectorizer)
 from sklearn.naive_bayes import MultinomialNB, BernoulliNB, GaussianNB
+from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.cross_validation import ShuffleSplit
 from sklearn.svm import LinearSVC
 from sklearn.ensemble import GradientBoostingClassifier, AdaBoostClassifier
 from sklearn.linear_model import (RidgeClassifier, Perceptron,
                                   PassiveAggressiveClassifier, SGDClassifier)
-from sklearn.multiclass import OneVsRestClassifier
+from sklearn.multiclass import OneVsOneClassifier
+from sklearn.pipeline import Pipeline
 import sklearn.metrics
+
+from nltk import sent_tokenize, word_tokenize, FreqDist, WordNetLemmatizer
+from nltk.corpus import stopwords
 
 import sys
 import pandas as pd
@@ -21,27 +27,53 @@ if len(sys.argv) < 2:
     sys.exit(0)
 
 f = sys.argv[1]
-csv = pd.read_csv(f, header=None)
+csv = pd.read_csv(f, header=None, encoding='utf-8')
+
+print np.sum(csv[2].apply(pd.value_counts))
+
+
+def featurize(input):
+    input = input.replace(u"\u2019", "'")
+    input = input.replace("'", "")
+    input = input.replace("http://", "")
+    input = input.replace("https://", "")
+
+    input = input.replace(u"\xa7", '')
+    input = input.replace('`', '')
+    input = input.replace("-", '')
+    input = input.replace("...", '')
+
+    tokens = [word for sent in sent_tokenize(input)
+              for word in word_tokenize(sent)]
+
+    stop = stopwords.words('english')
+    tokens = [token for token in tokens if token not in stop]
+
+    tokens = [word.lower() for word in tokens]
+
+    tokens = [word for word in tokens if len(word) >= 2]
+
+    lmtzr = WordNetLemmatizer()
+    tokens = [lmtzr.lemmatize(word) for word in tokens]
+
+    return tokens
 
 classifiers = [
     SGDClassifier(alpha=.0001, n_iter=50, penalty='l2'),
-    RidgeClassifier(tol=1e-2, solver="lsqr"),
-    Perceptron(n_iter=50),
-    PassiveAggressiveClassifier(n_iter=50, loss='squared_hinge', C=0.8),
+    # RidgeClassifier(tol=1e-2, solver="lsqr"),
+    # Perceptron(n_iter=50),
+    # PassiveAggressiveClassifier(n_iter=50, loss='squared_hinge'),
     BernoulliNB(alpha=0.01),
     MultinomialNB(alpha=0.01),
     LinearSVC(loss='l2', penalty='l2', dual=False, tol=1e-3),
 ]
 
 vectorizers = [
-    HashingVectorizer(n_features=10, non_negative=True),
-    TfidfVectorizer(sublinear_tf=True, max_df=0.5, stop_words='english'),
     CountVectorizer(ngram_range=(1, 2),
-                    token_pattern=ur"\b[a-z0-9_\-\.]+[a-z][a-z0-9_\-\.]+\b",
-                    min_df=1),
+                    tokenizer=featurize),
 ]
 
-splitter = ShuffleSplit(csv.shape[0], n_iter=20, test_size=0.2)
+splitter = ShuffleSplit(csv.shape[0], n_iter=10, test_size=0.1)
 for v in vectorizers:
     print "> Running tests with {}".format(v)
     for classifier in classifiers:
@@ -50,21 +82,25 @@ for v in vectorizers:
         f1s = []
 
         for train, test in splitter:
-            vectorizer = v
-            X_train_tfidf = vectorizer.fit_transform(csv[1][train])
+            pipeline = Pipeline([('vect', v),
+                                 ('tfidf', TfidfTransformer(sublinear_tf=True,
+                                                            use_idf=False)),
+                                 ('clf', OneVsOneClassifier(classifier))])
 
-            clf = OneVsRestClassifier(classifier)
+            pipeline.fit(np.asarray(csv[1][train]),
+                         np.asarray(csv[2][train]))
 
-            clf.fit(X_train_tfidf, csv[2][train])
-
-            y_test = csv[2][test].as_matrix()
-            X_new_tfidf = vectorizer.transform(csv[1][test])
-            accuracies.append(clf.score(X_new_tfidf, y_test))
-            f1s.append(sklearn.metrics.f1_score(clf.predict(X_new_tfidf),
+            y_test = csv[2][test]
+            X_test = csv[1][test]
+            accuracies.append(pipeline.score(X_test, y_test))
+            f1s.append(sklearn.metrics.f1_score(pipeline.predict(X_test),
                                                 y_test))
 
         accuracies = np.array(accuracies)
         f1s = np.array(f1s)
         print '    > Accuracy: {} ({})'.format(accuracies.mean(),
                                                accuracies.std()*2)
+        # print accuracies
         print '    > F1 scires {} ({})'.format(f1s.mean(), f1s.std()*2)
+        # print f1s
+        # print pipeline.steps[0][1].get_feature_names()
