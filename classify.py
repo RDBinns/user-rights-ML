@@ -101,6 +101,6 @@ for v in vectorizers:
         print '    > Accuracy: {} ({})'.format(accuracies.mean(),
                                                accuracies.std()*2)
         # print accuracies
-        print '    > F1 scires {} ({})'.format(f1s.mean(), f1s.std()*2)
+        print '    > F1 scores {} ({})'.format(f1s.mean(), f1s.std()*2)
         # print f1s
         # print pipeline.steps[0][1].get_feature_names()
