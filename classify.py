@@ -13,6 +13,8 @@ from sklearn.pipeline import Pipeline
 import sklearn.metrics
 
 from nltk import sent_tokenize, word_tokenize, FreqDist, WordNetLemmatizer
+from nltk.stem.porter import PorterStemmer
+from nltk.stem.snowball import SnowballStemmer
 from nltk.corpus import stopwords
 
 import sys
@@ -54,7 +56,8 @@ def featurize(input):
     tokens = [word for word in tokens if len(word) >= 2]
 
     lmtzr = WordNetLemmatizer()
-    tokens = [lmtzr.lemmatize(word) for word in tokens]
+    stemmer = SnowballStemmer('english')
+    tokens = [stemmer.stem(word) for word in tokens]
 
     return tokens
 
@@ -69,11 +72,11 @@ classifiers = [
 ]
 
 vectorizers = [
-    CountVectorizer(ngram_range=(1, 1),
-                    tokenizer=featurize),
     CountVectorizer(ngram_range=(1, 2),
                     tokenizer=featurize),
     CountVectorizer(ngram_range=(1, 3),
+                    tokenizer=featurize),
+    CountVectorizer(ngram_range=(1, 4),
                     tokenizer=featurize),
 ]
 
