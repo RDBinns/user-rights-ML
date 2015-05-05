@@ -69,7 +69,11 @@ classifiers = [
 ]
 
 vectorizers = [
+    CountVectorizer(ngram_range=(1, 1),
+                    tokenizer=featurize),
     CountVectorizer(ngram_range=(1, 2),
+                    tokenizer=featurize),
+    CountVectorizer(ngram_range=(1, 3),
                     tokenizer=featurize),
 ]
 
