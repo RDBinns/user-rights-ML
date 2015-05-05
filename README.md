@@ -12,3 +12,21 @@ The data is taken from [tosdr.org](www.tosdr.org), specifically what's contained
 If this approach works, it could give an automatic score to any privacy policy / terms-of-service text. No one has time to read these texts, so an automated guess as to how good or bad they are, even if it is imperfect, could be quite useful.
 
 See also [Ammar et al, 2012](http://reports-archive.adm.cs.cmu.edu/anon/isr2012/CMU-ISR-12-114.pdf)
+
+## Installation
+
+In order to play with the scripts in this repository you need to have
+[scikit-learn](http://scikit-learn.org/) and [pandas](http://pandas.pydata.org/) installed.
+
+To actually get the data first clone the repository to a destination you like
+and then run
+
+        git submodule init
+
+which will initalize the tosdr.org submodule. After that you can run
+
+        git submodule update
+
+which will in turn get the latest data.
+
+To generate the dataset we use run `python getpointsdata.py`.
